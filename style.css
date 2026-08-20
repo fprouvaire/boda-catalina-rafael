@@ -1,18 +1,18 @@
 @font-face {
     font-family: "Gloriant";
-    src: url("fonts/Gloriant.woff2") format("woff2");
+    src: url("Fonts/Gloriant.woff2") format("woff2");
     font-display: swap;
 }
 
 @font-face {
     font-family: "Phosphorus";
-    src: url("fonts/Phosb__.woff2") format("woff2");
+    src: url("Fonts/Phosb__.woff2") format("woff2");
     font-display: swap;
 }
 
 @font-face {
     font-family: "Cormorant";
-    src: url("fonts/Cormorant-VariableFont_wght.woff2") format("woff2");
+    src: url("Fonts/Cormorant-VariableFont_wght.woff2") format("woff2");
     font-display: swap;
 }
 
