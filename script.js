@@ -9,6 +9,9 @@ if (envelope && invitation && seal) {
     envelope.classList.add("is-open");
     invitation.classList.add("visible");
 
+    setTimeout(() => {
+  envelope.style.display = "none";}, 1000);
+
   });
 
 }
@@ -35,7 +38,7 @@ function updateCountdown() {
   const remainingTime = weddingDate.getTime() - currentDate.getTime();
 
   if (remainingTime <= 0) {
-    daysElement.textContent = "000";
+    daysElement.textContent = "00";
     hoursElement.textContent = "00";
     minutesElement.textContent = "00";
     secondsElement.textContent = "00";
@@ -54,7 +57,7 @@ function updateCountdown() {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  daysElement.textContent = formatNumber(days, 3);
+  daysElement.textContent = formatNumber(days, 2);
   hoursElement.textContent = formatNumber(hours);
   minutesElement.textContent = formatNumber(minutes);
   secondsElement.textContent = formatNumber(seconds);

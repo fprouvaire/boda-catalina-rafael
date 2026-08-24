@@ -503,7 +503,7 @@ body {
 }
 
 .family-role {
-  margin: 8px auto 10px;
+  margin: 15px auto 10px;
 
   font-family: "Cormorant", serif;
   font-size: clamp(0.9rem, 3.2vw, 1.05rem);
@@ -519,7 +519,7 @@ body {
 }
 
 .family-padrino-group {
-  margin-bottom: 18px;
+  margin-bottom: 30px;
 }
 
 
