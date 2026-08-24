@@ -1,6 +1,8 @@
 const envelope = document.querySelector("#envelope");
 const invitation = document.querySelector("#invitation");
 const seal = document.querySelector("#seal");
+const musicToggle =
+  document.getElementById("music-toggle");
 
 if (envelope && invitation && seal) {
 
@@ -8,6 +10,7 @@ if (envelope && invitation && seal) {
 
     envelope.classList.add("is-open");
     invitation.classList.add("visible");
+    musicToggle?.classList.add("is-visible");
 
     setTimeout(() => {
   envelope.style.display = "none";}, 1000);
@@ -16,6 +19,79 @@ if (envelope && invitation && seal) {
 
 }
 
+/* =========================
+   MUSIC
+   ========================= */
+
+const weddingMusic =
+  document.getElementById("wedding-music");
+
+const musicIcon =
+  document.getElementById("music-icon");
+
+
+musicToggle?.addEventListener("click", async () => {
+
+  if (!weddingMusic) return;
+
+
+  /* MUSIC IS CURRENTLY OFF */
+
+  if (weddingMusic.paused) {
+
+    try {
+
+      await weddingMusic.play();
+
+      musicIcon.src =
+        "Assets/music-on-green.svg";
+
+        musicToggle.classList.add("is-playing");
+
+      musicToggle.setAttribute(
+        "aria-label",
+        "Pausar música"
+      );
+
+      musicToggle.setAttribute(
+        "aria-pressed",
+        "true"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Music could not be played:",
+        error
+      );
+
+    }
+
+
+  /* MUSIC IS CURRENTLY ON */
+
+  } else {
+
+    weddingMusic.pause();
+
+    musicIcon.src =
+      "Assets/music-off-green.svg";
+
+      musicToggle.classList.remove("is-playing");
+
+    musicToggle.setAttribute(
+      "aria-label",
+      "Reproducir música"
+    );
+
+    musicToggle.setAttribute(
+      "aria-pressed",
+      "false"
+    );
+
+  }
+
+});
 
 /* =========================
    COUNTDOWN

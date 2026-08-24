@@ -7,7 +7,7 @@
 
     <title>Invitación de boda</title>
 
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 
 <body>
@@ -598,6 +598,10 @@
 
 </section>
 
+<!-- =========================
+     RSVP
+     ========================= -->
+
 <section class="rsvp-section">
 
   <div class="rsvp-divider rsvp-divider-top" aria-hidden="true">
@@ -694,16 +698,36 @@
   </div>
 
 
+  <!-- CONFIRM RSVP -->
+
+  <button
+    class="rsvp-submit"
+    id="rsvp-submit"
+    type="button"
+    disabled
+  >
+    Confirmar
+  </button>
+
+  <p
+    class="rsvp-status"
+    id="rsvp-status"
+    aria-live="polite"
+  ></p>
+
+
   <!-- INVITATION LIMIT NOTE -->
 
   <p class="rsvp-limit-note">
-    Esta invitación contempla únicamente
-    el número de personas indicado.
+   Esta invitación contempla hasta el número de personas indicado.
+   Te agradecemos confirmar cuántas personas asistirán.
   </p>
 
-<div class="rsvp-note-divider" aria-hidden="true">
-  <img src="Assets/separation-red.svg" alt="">
-</div>
+
+  <div class="rsvp-note-divider" aria-hidden="true">
+    <img src="Assets/separation-red.svg" alt="">
+  </div>
+
 
   <!-- NO SMALL CHILDREN -->
 
@@ -715,9 +739,9 @@
 
   <!-- BOTTOM RSVP BOW -->
 
-<div class="rsvp-divider rsvp-divider-bottom" aria-hidden="true">
-  <img src="Assets/reversebow-red.svg" alt="">
-</div>
+  <div class="rsvp-divider rsvp-divider-bottom" aria-hidden="true">
+    <img src="Assets/reversebow-red.svg" alt="">
+  </div>
 
 </section>
 
@@ -763,7 +787,30 @@
 
     </main>
 
-    <script src="script.js?v=2"></script>
+    <!-- =========================
+     MUSIC
+     ========================= -->
+
+<audio id="wedding-music" preload="metadata">
+  <source src="Assets/your-song-violin.mp3" type="audio/mpeg">
+</audio>
+
+<button
+  class="music-toggle"
+  id="music-toggle"
+  type="button"
+  aria-label="Reproducir música"
+  aria-pressed="false"
+>
+  <img
+    id="music-icon"
+    src="Assets/music-off-green.svg"
+    alt=""
+    aria-hidden="true"
+  >
+</button>
+
+    <script src="script.js?v=3"></script>
 
 </body>
 
