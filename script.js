@@ -1,3 +1,5 @@
+const RSVP_API_URL =
+  "https://script.google.com/macros/s/AKfycbyvpehhzPyYmJACKT5K2vMUxAb72qtQYnGpKLEKZkFKAcqWpw1JSFnn0dYZCLvlZsXltg/exec";
 const envelope = document.querySelector("#envelope");
 const invitation = document.querySelector("#invitation");
 const seal = document.querySelector("#seal");
@@ -154,7 +156,11 @@ if (
    RSVP
    ========================= */
 
-const rsvpChoices = document.querySelectorAll(".rsvp-choice");
+const rsvpChoices =
+  document.querySelectorAll(".rsvp-choice");
+
+const guestNameElement =
+  document.getElementById("guest-name");
 
 const seatCountElement =
   document.getElementById("seat-count");
@@ -165,17 +171,33 @@ const attendingCountWrap =
 const attendingCountSelect =
   document.getElementById("attending-count");
 
+const rsvpSubmit =
+  document.getElementById("rsvp-submit");
 
-/* TEST DATA
-   Later this comes from Google Sheets
-*/
-
-const invitedSeats = Number(
-  seatCountElement?.textContent.trim() || 1
-);
+const rsvpStatus =
+  document.getElementById("rsvp-status");
 
 
-/* BUILD ATTENDING OPTIONS */
+/* =========================
+   READ GUEST ID FROM URL
+   ========================= */
+
+const urlParams =
+  new URLSearchParams(window.location.search);
+
+const guestId =
+  urlParams.get("id");
+
+
+/* CURRENT RSVP STATE */
+
+let invitedSeats = 1;
+let selectedRsvp = null;
+
+
+/* =========================
+   BUILD ATTENDING OPTIONS
+   ========================= */
 
 function buildAttendingOptions(maxSeats) {
 
@@ -183,9 +205,14 @@ function buildAttendingOptions(maxSeats) {
 
   attendingCountSelect.innerHTML = "";
 
-  for (let number = 1; number <= maxSeats; number++) {
+  for (
+    let number = 1;
+    number <= maxSeats;
+    number++
+  ) {
 
-    const option = document.createElement("option");
+    const option =
+      document.createElement("option");
 
     option.value = number;
     option.textContent = number;
@@ -194,69 +221,385 @@ function buildAttendingOptions(maxSeats) {
 
   }
 
-  /* Default to everyone attending */
+  /* Default to all invited guests */
 
-  attendingCountSelect.value = maxSeats;
+  attendingCountSelect.value =
+    String(maxSeats);
 }
 
-buildAttendingOptions(invitedSeats);
+
+/* =========================
+   LOAD GUEST FROM GOOGLE SHEETS
+   ========================= */
+
+async function loadGuestData() {
+
+  if (!guestId) {
+
+    console.warn(
+      "No guest ID was found in the URL."
+    );
+
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${RSVP_API_URL}?id=${encodeURIComponent(guestId)}`
+    );
+
+    const data =
+      await response.json();
 
 
-/* YES / NO BUTTONS */
+    if (!data.success) {
+
+      console.error(
+        "Guest lookup failed:",
+        data.error
+      );
+
+      return;
+    }
+
+
+    /* GUEST NAME */
+
+    if (guestNameElement) {
+      guestNameElement.textContent =
+        data.guest;
+    }
+
+
+    /* INVITED SEATS */
+
+    invitedSeats =
+      Number(data.seats) || 1;
+
+    if (seatCountElement) {
+      seatCountElement.textContent =
+        invitedSeats;
+    }
+
+
+    /* BUILD SELECT */
+
+    buildAttendingOptions(
+      invitedSeats
+    );
+
+
+    /* =========================
+       LOAD PREVIOUS RSVP
+       ========================= */
+
+    if (data.rsvp === "Sí") {
+
+      selectedRsvp = "yes";
+
+      const yesButton =
+        document.querySelector(
+          '.rsvp-choice[data-response="yes"]'
+        );
+
+      yesButton?.classList.add(
+        "is-selected"
+      );
+
+      attendingCountWrap?.classList.add(
+        "is-visible"
+      );
+
+      if (
+        attendingCountSelect &&
+        data.attending
+      ) {
+        attendingCountSelect.value =
+          String(data.attending);
+      }
+
+      if (rsvpSubmit) {
+        rsvpSubmit.disabled = false;
+        rsvpSubmit.textContent =
+          "Actualizar";
+      }
+
+    }
+
+
+    if (data.rsvp === "No") {
+
+      selectedRsvp = "no";
+
+      const noButton =
+        document.querySelector(
+          '.rsvp-choice[data-response="no"]'
+        );
+
+      noButton?.classList.add(
+        "is-selected"
+      );
+
+      attendingCountWrap?.classList.remove(
+        "is-visible"
+      );
+
+      if (rsvpSubmit) {
+        rsvpSubmit.disabled = false;
+        rsvpSubmit.textContent =
+          "Actualizar";
+      }
+
+    }
+
+
+    console.log(
+      "Guest loaded:",
+      data
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Could not load guest data:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================
+   YES / NO BUTTONS
+   ========================= */
 
 rsvpChoices.forEach((button) => {
 
-  button.addEventListener("click", () => {
+  button.addEventListener(
+    "click",
+    () => {
 
-    rsvpChoices.forEach((choice) => {
-      choice.classList.remove("is-selected");
-    });
+      rsvpChoices.forEach(
+        (choice) => {
+          choice.classList.remove(
+            "is-selected"
+          );
+        }
+      );
 
-    button.classList.add("is-selected");
+      button.classList.add(
+        "is-selected"
+      );
 
-    const response = button.dataset.response;
+      selectedRsvp =
+        button.dataset.response;
 
 
-    /* YES */
+      /* ENABLE CONFIRM BUTTON */
 
-    if (response === "yes") {
-
-      attendingCountWrap?.classList.add("is-visible");
-
-      if (attendingCountSelect) {
-        attendingCountSelect.value = invitedSeats;
+      if (rsvpSubmit) {
+        rsvpSubmit.disabled = false;
       }
 
-    }
 
+      /* CLEAR OLD STATUS MESSAGE */
 
-    /* NO */
-
-    if (response === "no") {
-
-      attendingCountWrap?.classList.remove("is-visible");
-
-      if (attendingCountSelect) {
-        attendingCountSelect.value = "";
+      if (rsvpStatus) {
+        rsvpStatus.textContent = "";
       }
 
+
+      /* YES */
+
+      if (
+        selectedRsvp === "yes"
+      ) {
+
+        attendingCountWrap
+          ?.classList.add(
+            "is-visible"
+          );
+
+        if (
+          attendingCountSelect &&
+          !attendingCountSelect.value
+        ) {
+
+          attendingCountSelect.value =
+            String(invitedSeats);
+
+        }
+
+      }
+
+
+      /* NO */
+
+      if (
+        selectedRsvp === "no"
+      ) {
+
+        attendingCountWrap
+          ?.classList.remove(
+            "is-visible"
+          );
+
+        if (
+          attendingCountSelect
+        ) {
+          attendingCountSelect.value =
+            "";
+        }
+
+      }
+
+
+      console.log(
+        "RSVP response:",
+        selectedRsvp
+      );
+
     }
-
-
-    console.log("RSVP response:", response);
-
-  });
-
-});
-
-
-/* ATTENDING COUNT TEST */
-
-attendingCountSelect?.addEventListener("change", () => {
-
-  console.log(
-    "People attending:",
-    attendingCountSelect.value
   );
 
 });
+
+
+/* =========================
+   ATTENDING COUNT
+   ========================= */
+
+attendingCountSelect
+  ?.addEventListener(
+    "change",
+    () => {
+
+      console.log(
+        "People attending:",
+        attendingCountSelect.value
+      );
+
+      if (rsvpStatus) {
+        rsvpStatus.textContent = "";
+      }
+
+    }
+  );
+
+/* =========================
+   SAVE RSVP
+   ========================= */
+
+rsvpSubmit?.addEventListener("click", async () => {
+
+  if (!guestId || !selectedRsvp) {
+    return;
+  }
+
+
+  let attending = 0;
+
+
+  /* YES — VALIDATE ATTENDING COUNT */
+
+  if (selectedRsvp === "yes") {
+
+    attending =
+      Number(attendingCountSelect?.value);
+
+    if (
+      !Number.isInteger(attending) ||
+      attending < 1 ||
+      attending > invitedSeats
+    ) {
+
+      if (rsvpStatus) {
+        rsvpStatus.textContent =
+          "Por favor, selecciona cuántas personas asistirán.";
+      }
+
+      return;
+    }
+
+  }
+
+
+  /* SAVING STATE */
+
+  rsvpSubmit.disabled = true;
+  rsvpSubmit.textContent = "Guardando...";
+
+  if (rsvpStatus) {
+    rsvpStatus.textContent = "";
+  }
+
+
+  try {
+
+    const saveUrl =
+      `${RSVP_API_URL}` +
+      `?action=save` +
+      `&id=${encodeURIComponent(guestId)}` +
+      `&rsvp=${encodeURIComponent(selectedRsvp)}` +
+      `&attending=${encodeURIComponent(attending)}` +
+      `&t=${Date.now()}`;
+
+
+    const response =
+      await fetch(saveUrl);
+
+
+    const data =
+      await response.json();
+
+
+    if (!data.success) {
+
+      throw new Error(
+        data.error || "Could not save RSVP"
+      );
+
+    }
+
+
+    /* SUCCESS */
+
+    rsvpSubmit.textContent =
+      "Actualizar";
+
+    if (rsvpStatus) {
+      rsvpStatus.textContent =
+        "¡Gracias! Hemos recibido tu confirmación.";
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Could not save RSVP:",
+      error
+    );
+
+    rsvpSubmit.textContent =
+      "Confirmar";
+
+    if (rsvpStatus) {
+      rsvpStatus.textContent =
+        "No pudimos guardar tu respuesta. Por favor, inténtalo nuevamente.";
+    }
+
+
+  } finally {
+
+    rsvpSubmit.disabled = false;
+
+  }
+
+});
+/* =========================
+   LOAD GUEST
+   ========================= */
+
+loadGuestData();
