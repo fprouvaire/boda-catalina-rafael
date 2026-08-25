@@ -307,12 +307,29 @@ async function loadGuestData() {
        GUEST NAME
        ========================= */
 
-    if (guestNameElement) {
+   if (guestNameElement) {
 
-      guestNameElement.textContent =
-        data.guest;
+  const guestName =
+    String(data.guest || "").trim();
 
-    }
+  if (guestName.includes("&")) {
+
+    const names =
+      guestName.split("&");
+
+    guestNameElement.innerHTML =
+      `${names[0].trim()}<br>` +
+      `<span class="guest-ampersand">&amp;</span><br>` +
+      `${names.slice(1).join("&").trim()}`;
+
+  } else {
+
+    guestNameElement.textContent =
+      guestName;
+
+  }
+
+}
 
 
     /* =========================

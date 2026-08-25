@@ -1319,13 +1319,18 @@ body {
   
 
   letter-spacing: 0.02em;
-  line-height: 1.2;
+  line-height: 1.05;
 
   text-align: center;
 
   color: var(--teal);
 }
 
+.guest-ampersand {
+  display: inline-block;
+  margin: -1px 0;
+  font-size: 0.85em;
+}
 
 /* =========================
    MAIN RSVP ROW
