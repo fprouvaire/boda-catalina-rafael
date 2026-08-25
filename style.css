@@ -57,7 +57,7 @@ body {
     background-repeat: repeat;
 }
 
-.envelope {
+  .envelope {
   position: fixed;
   inset: 0;
 
@@ -68,7 +68,11 @@ body {
   overflow: hidden;
 
   z-index: 10;
+
+  display: grid;
+  place-items: center;
 }
+
 
 .flap {
   position: absolute;
@@ -139,9 +143,10 @@ body {
 }
 
 .seal {
-  position: fixed;
-  top: 50dvh;
-  left: 50%;
+  position: relative;
+
+  top: auto;
+  left: auto;
 
   z-index: 3;
 
@@ -149,12 +154,9 @@ body {
 
   padding: 0;
   border: 0;
-
   background: transparent;
 
   cursor: pointer;
-
-  transform: translate(-50%, -50%);
 
   animation: seal-pulse 2s ease-in-out infinite;
 
@@ -180,12 +182,10 @@ body {
 
 .envelope.is-open .seal {
   opacity: 0;
-
   pointer-events: none;
-
   animation: none;
 
-  transform: translate(-50%, -50%) scale(0.7);
+  transform: scale(0.7);
 }
 
 .envelope.is-open {
@@ -195,11 +195,11 @@ body {
 @keyframes seal-pulse {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 
   50% {
-    transform: translate(-50%, -50%) scale(1.08);
+    transform: scale(1.08);
   }
 }
 
