@@ -1,5 +1,5 @@
 const RSVP_API_URL =
-  "https://script.google.com/macros/s/AKfycbyvpehhzPyYmJACKT5K2vMUxAb72qtQYnGpKLEKZkFKAcqWpw1JSFnn0dYZCLvlZsXltg/exec";
+  "https://boda-rsvp-api.boda-catrafa.workers.dev";
 const envelope = document.querySelector("#envelope");
 const invitation = document.querySelector("#invitation");
 const seal = document.querySelector("#seal");
@@ -234,24 +234,61 @@ function buildAttendingOptions(maxSeats) {
 
 async function loadGuestData() {
 
+  /* =========================
+     ERROR STATE
+     ========================= */
+
+  function showInvitationError() {
+
+    if (guestNameElement) {
+      guestNameElement.innerHTML =
+        "Invitación no disponible.<br>Por favor, intenta de nuevo.";
+    }
+
+    if (seatCountElement) {
+      seatCountElement.textContent = "—";
+    }
+
+  }
+
+
+  /* NO ID */
+
   if (!guestId) {
 
     console.warn(
       "No guest ID was found in the URL."
     );
 
+    showInvitationError();
+
     return;
   }
+
 
   try {
 
     const response = await fetch(
-      `${RSVP_API_URL}?id=${encodeURIComponent(guestId)}`
+      `${RSVP_API_URL}?id=${encodeURIComponent(guestId)}&t=${Date.now()}`
     );
+
+
+    /* API / NETWORK ERROR */
+
+    if (!response.ok) {
+
+      throw new Error(
+        `RSVP API returned ${response.status}`
+      );
+
+    }
+
 
     const data =
       await response.json();
 
+
+    /* INVALID / UNKNOWN GUEST */
 
     if (!data.success) {
 
@@ -260,30 +297,40 @@ async function loadGuestData() {
         data.error
       );
 
+      showInvitationError();
+
       return;
     }
 
 
-    /* GUEST NAME */
+    /* =========================
+       GUEST NAME
+       ========================= */
 
     if (guestNameElement) {
+
       guestNameElement.textContent =
         data.guest;
+
     }
 
 
-    /* INVITED SEATS */
+    /* =========================
+       RESERVED SEATS
+       ========================= */
 
     invitedSeats =
       Number(data.seats) || 1;
 
     if (seatCountElement) {
+
       seatCountElement.textContent =
         invitedSeats;
+
     }
 
 
-    /* BUILD SELECT */
+    /* BUILD ATTENDING SELECT */
 
     buildAttendingOptions(
       invitedSeats
@@ -315,14 +362,19 @@ async function loadGuestData() {
         attendingCountSelect &&
         data.attending
       ) {
+
         attendingCountSelect.value =
           String(data.attending);
+
       }
 
       if (rsvpSubmit) {
+
         rsvpSubmit.disabled = false;
+
         rsvpSubmit.textContent =
           "Actualizar";
+
       }
 
     }
@@ -346,9 +398,12 @@ async function loadGuestData() {
       );
 
       if (rsvpSubmit) {
+
         rsvpSubmit.disabled = false;
+
         rsvpSubmit.textContent =
           "Actualizar";
+
       }
 
     }
@@ -359,12 +414,15 @@ async function loadGuestData() {
       data
     );
 
+
   } catch (error) {
 
     console.error(
       "Could not load guest data:",
       error
     );
+
+    showInvitationError();
 
   }
 

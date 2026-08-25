@@ -139,8 +139,8 @@ body {
 }
 
 .seal {
-  position: absolute;
-  top: 50%;
+  position: fixed;
+  top: 50dvh;
   left: 50%;
 
   z-index: 3;
@@ -1334,14 +1334,18 @@ body {
    ========================= */
 
 .rsvp-card {
-  display: grid;
+ display: grid;
 
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns:
+    0.85fr
+    0.85fr
+    1.2fr;
+
   align-items: center;
 
   width: 100%;
 
-  column-gap: 12px;
+  column-gap: 8px;
 }
 
 
