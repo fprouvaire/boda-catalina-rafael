@@ -177,6 +177,8 @@ const rsvpSubmit =
 const rsvpStatus =
   document.getElementById("rsvp-status");
 
+  const rsvpDeadlineElement =
+  document.getElementById("rsvp-deadline");
 
 /* =========================
    READ GUEST ID FROM URL
@@ -328,6 +330,11 @@ async function loadGuestData() {
       guestName;
 
   }
+
+  if (rsvpDeadlineElement) {
+  rsvpDeadlineElement.textContent =
+    data.deadline || "—";
+}
 
 }
 

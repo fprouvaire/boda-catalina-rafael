@@ -1699,6 +1699,38 @@ body {
 }
 
 /* =========================
+   DEADLINE
+   ========================= */
+
+.rsvp-deadline {
+  width: 85%;
+  max-width: 360px;
+  margin: 10px auto 22px;
+  text-align: center;
+}
+
+.rsvp-deadline-label {
+  margin: 0;
+  font-family: "Cormorant", serif;
+  font-size: clamp(0.95rem, 3.4vw, 1.05rem);
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.rsvp-deadline-date {
+  margin: 3px 0 0;
+
+  font-family: "Cormorant", serif;
+  font-size: clamp(1rem, 3.8vw, 1.15rem);
+  font-weight: 600;
+  font-style: normal;
+
+  letter-spacing: 0.03em;
+
+  color: var(--teal);
+}
+
+/* =========================
    FAREWELL
    ========================= */
 
